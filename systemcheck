@@ -1,0 +1,38 @@
+#!/bin/bash
+
+#This bash program should:
+#1) check current free disk space in the server
+#2) get number of active processes running and write them into a log file
+#3) email generated log file to yourself
+
+#The script should run twice a day
+#RSA Key should be set to not enter password everytime the script runs
+
+#TODO: send txt file from VMs to my main email
+
+FILE_PATH="~/syscheck/systemcheck.txt"
+if [ -z $FILE_PATH ] ; then
+    echo "File path variable is not set in the system."
+fi
+#"/home/dell/scripting/systemcheckproject/systemcheck.txt"
+echo "Today's time and date: $(date "+%H:%M:%S   %d/%m/%y")" > systemcheck.txt
+
+MEM_INFO=$(df -h --total | tail -n 1)
+
+echo "Memory size total: $(echo $MEM_INFO | awk '{ print $2 }')" >> systemcheck.txt
+echo "Memory used: $(echo $MEM_INFO | awk '{ print $3 }')" >> systemcheck.txt
+echo "Memory available $(echo $MEM_INFO | awk '{ print $4 }')" >> systemcheck.txt
+echo "Memory use% $(echo $MEM_INFO | awk '{ print $5 }')" >> systemcheck.txt
+
+echo "Number of active processes in the system: $(ps -a | wc -l)" >> systemcheck.txt
+echo "Number of daemons currently running: $(ps -x | wc -l)" >> systemcheck.txt
+
+SUBJECT="Attaching file with system check"
+BODY=$(cat systemcheck.txt)
+
+#below is condition on how to send it to a specific email adress
+if [[ -n $emailaddress ]] ; then
+        echo "$BODY" | mail -s "$SUBJECT" -A "$FILE_PATH" $emailaddress
+    else 
+        echo "Email adress is not set"
+fi 

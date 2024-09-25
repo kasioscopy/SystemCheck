@@ -1,0 +1,16 @@
+#!/bin/bash
+
+ssh $USER '~/syscheck/syscheck'
+
+if [ -f $FILE_PATH ] && [ ! -x $FILE_PATH ] ; then
+    chmod +x $FILE_PATH
+    echo "File's $FILE_PATH permissions have been changed"
+else
+    echo "File $FILE_PATH is already executable or does not exist"
+fi
+
+scp $USER:~/syscheck/systemcheck.txt ~/.
+
+# add cron job
+#0 6 * * * /'~/syscheck/syscheck'
+#0 18 * * * /'~/syscheck/syscheck'
